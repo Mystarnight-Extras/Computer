@@ -1,0 +1,13 @@
+{
+  "name": "mystarsnight-clicker-global",
+  "main": "worker.js",
+  "compatibility_date": "2026-08-18",
+  "durable_objects": {
+    "bindings": [
+      { "name": "CLICKER", "class_name": "Clicker" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["Clicker"] }
+  ]
+}
