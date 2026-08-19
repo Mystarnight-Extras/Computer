@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Global Button</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#09090b;color:#fff;font-family:system-ui,-apple-system,sans-serif;overflow:hidden}.wrap{text-align:center;padding:24px}.eyebrow{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#a1a1aa}.count{font-size:clamp(70px,18vw,190px);font-weight:900;line-height:1;margin:12px 0 28px;letter-spacing:-.06em}.button{width:min(68vw,330px);height:min(68vw,330px);border:0;border-radius:50%;background:linear-gradient(145deg,#fff,#b8b8c0);color:#09090b;font-size:clamp(25px,6vw,42px);font-weight:900;box-shadow:0 22px 70px #000, inset 0 -10px 20px #777, inset 0 10px 20px #fff;cursor:pointer;transition:.08s transform}.button:active{transform:scale(.94)}.status{margin-top:24px;color:#a1a1aa;font-size:14px}.pulse{animation:pulse .25s ease}@keyframes pulse{50%{transform:scale(1.08)}}.error{color:#f87171}.hint{margin-top:8px;color:#71717a;font-size:12px}</style>
+</head>
+<body>
+<div class="wrap"><div class="eyebrow">GLOBAL BUTTON</div><div id="count" class="count">0</div><button id="button" class="button">PRESS</button><div id="status" class="status">Connecting…</div><div class="hint">Every press is shared globally.</div></div>
+<script>
+// Set these to your Cloudflare Worker URL and optional public token.
+const WORKER_URL='YOUR_CLOUDFLARE_WORKER_URL';
+const API_TOKEN='';
+let count=0;
+const countEl=document.getElementById('count'),statusEl=document.getElementById('status'),button=document.getElementById('button');
+function render(){countEl.textContent=count.toLocaleString();countEl.classList.remove('pulse');void countEl.offsetWidth;countEl.classList.add('pulse')}
+async function getCount(){if(WORKER_URL.includes('YOUR_')){statusEl.textContent='Add your Cloudflare Worker URL to connect';return}try{const r=await fetch(WORKER_URL+'/count');if(!r.ok)throw Error();const d=await r.json();count=d.count;render();statusEl.textContent='Connected';}catch(e){statusEl.textContent='Could not connect to Cloudflare';statusEl.className='status error'}}
+async function press(){if(WORKER_URL.includes('YOUR_')){count++;render();return}button.disabled=true;try{const r=await fetch(WORKER_URL+'/press',{method:'POST',headers:API_TOKEN?{'Authorization':'Bearer '+API_TOKEN}:{}});if(!r.ok)throw Error();const d=await r.json();count=d.count;render();statusEl.textContent='Connected';}catch(e){statusEl.textContent='Press failed — try again';statusEl.className='status error'}finally{button.disabled=false}}
+button.onclick=press;getCount();setInterval(getCount,5000);
+</script>
+</body>
+</html>
